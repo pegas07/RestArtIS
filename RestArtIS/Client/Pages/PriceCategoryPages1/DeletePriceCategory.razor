@@ -1,0 +1,42 @@
+﻿@page "/pricecategory/delete/{priceCategoryId}"
+
+@inject HttpClient Http
+@inject Microsoft.AspNetCore.Components.NavigationManager navigation
+
+<h2>Delete</h2>
+<h3>Are you sure you want to delete price category: @priceCategory.Name</h3>
+<br />
+<div class="col-md-4">
+    <table class="table">
+        <tr>
+            <td>Name</td>
+            <td>@priceCategory.Name</td>
+        </tr>
+    </table>
+    <div class="form-group">
+        <input type="submit" value="Delete" @onclick="@(async () => await Delete())" class="btn btn-default" />
+        <input type="submit" value="Cancel" @onclick="@cancel" class="btn" />
+    </div>
+</div>
+@code {
+    [Parameter]
+    public string priceCategoryId { get; set; }
+
+    PriceCategoryDto priceCategory = new PriceCategoryDto();
+
+    protected override async Task OnInitializedAsync()
+    {
+        priceCategory = await Http.GetFromJsonAsync<PriceCategoryDto>("/api/PriceCategory/" + priceCategoryId);
+    }
+
+    protected async Task Delete()
+    {
+        await Http.DeleteAsync($"/api/PriceCategory/{priceCategoryId}");
+        navigation.NavigateTo("/pricecategory");
+    }
+
+    void cancel()
+    {
+        navigation.NavigateTo("/pricecategory");
+    }
+}

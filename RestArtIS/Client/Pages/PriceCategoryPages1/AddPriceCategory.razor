@@ -1,0 +1,37 @@
+﻿@page "/pricecategory/add"
+
+@inject HttpClient Http
+@inject Microsoft.AspNetCore.Components.NavigationManager navigation
+
+<h3>PriceCategory</h3>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form>
+            <div class="form-group">
+                <label for="Name" class="control-label">Name</label>
+                <input for="Name" class="form-control" @bind="@priceCategory.Name" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-default" @onclick="@(async () => await CreatePriceCategory())">Save</button>
+                <button class="btn" @onclick="@cancel">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+@code {
+    PriceCategoryDto priceCategory = new PriceCategoryDto();
+
+    protected async Task CreatePriceCategory()
+    {
+        await Http.PostAsJsonAsync("/api/PriceCategory", priceCategory);
+        navigation.NavigateTo("/pricecategory");
+    }
+
+    void cancel()
+    {
+        navigation.NavigateTo("/pricecategory");
+    }
+}

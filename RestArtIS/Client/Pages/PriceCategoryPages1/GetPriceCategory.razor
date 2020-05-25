@@ -1,0 +1,46 @@
+﻿@page "/pricecategory1"
+
+@inject HttpClient Http
+
+<h3>PriceCategory</h3>
+<p>
+    <a href="/pricecategory/add">Create</a>
+</p>
+@if (priceCategories == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class='table'>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Note</th>               
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pc in priceCategories)
+            {
+                <tr>
+                    <td>@pc.PriceCategoryId</td>
+                    <td>@pc.Name</td>
+                    <td>@pc.Note</td>
+                    <td>
+                        <a href='/pricecategory/edit/@pc.PriceCategoryId'>Edit</a>  |
+                        <a href='/pricecategory/delete/@pc.PriceCategoryId'>Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    PriceCategoryDto[] priceCategories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        priceCategories = await Http.GetFromJsonAsync<PriceCategoryDto[]>("/api/PriceCategory");
+    }
+}

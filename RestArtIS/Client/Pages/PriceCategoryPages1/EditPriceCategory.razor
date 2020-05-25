@@ -1,0 +1,44 @@
+﻿@page "/pricecategory/edit/{priceCategoryId}"
+
+@inject HttpClient Http
+@inject Microsoft.AspNetCore.Components.NavigationManager navigation
+
+<h3>PriceCategory</h3>
+<hr />
+<p>Current count: @priceCategoryId</p>
+<div class="row">
+    <div class="col-md-4">
+        <form>
+            <div class="form-group">
+                <label for="Name" class="control-label">Name</label>
+                <input for="Name" class="form-control" @bind="@priceCategory.Name" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-default" @onclick="@(async () => await UpdatePriceCategory())">Save</button>
+                <button class="btn" @onclick="@cancel">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+@code {
+    [Parameter]
+    public string priceCategoryId { get; set; }
+    PriceCategoryDto priceCategory = new PriceCategoryDto();
+
+    protected override async Task OnInitializedAsync()
+    {
+        priceCategory = await Http.GetFromJsonAsync<PriceCategoryDto>("/api/PriceCategory/" + priceCategoryId);
+    }
+
+    protected async Task UpdatePriceCategory()
+    {
+        await Http.PutAsJsonAsync("/api/PriceCategory/" + priceCategoryId, priceCategory);
+        navigation.NavigateTo("/pricecategory");
+    }
+
+    void cancel()
+    {
+        navigation.NavigateTo("/pricecategory");
+    }
+}

@@ -1,0 +1,55 @@
+﻿{
+   "ContextClassName": "RestArtISContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "DoNotCombineNamespace": false,
+   "IdReplace": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": "Data",
+   "OutputPath": "Models",
+   "ProjectRootNamespace": "RestArtIS.Server",
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Company]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[ItemPrice]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Menu]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Parlor]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[PriceCategory]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[RestArtItem]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[RestArtItemCategory]"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "[dbo].[Vat]"
+      }
+   ],
+   "UseDatabaseNames": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseSpatial": false
+}

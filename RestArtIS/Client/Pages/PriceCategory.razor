@@ -1,0 +1,139 @@
+﻿@page "/pricecategory"
+
+@inject HttpClient Http
+
+<h3>PriceCategory</h3>
+@if (priceCategories == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Note</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pc in priceCategories)
+            {
+                <tr>
+                    <td>@pc.PriceCategoryId</td>
+                    <td>@pc.Name</td>
+                    <td>@pc.Note</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => EditPriceCategory(pc))">Edit</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <p>
+        <button class="btn btn-primary"
+                @onclick="AddNewPriceCategory">
+            Add
+        </button>
+    </p>
+    @if (ShowPopup)
+    {
+        <div class="modal" tabindex="-1" style="display:block"
+             role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Edit Price Category</h3>
+                        <!-- Button to close the popup -->
+                        <button type="button" class="close"
+                                @onclick="ClosePopup">
+                            <span aria-hidden="true">X</span>
+                        </button>
+                    </div>
+                    <!-- Edit form for the current forecast -->
+                    <div class="modal-body">
+                        <input class="form-control" type="text"
+                               placeholder="Name"
+                               @bind="priceCategoryDto.Name" />
+                        <input class="form-control" type="text"
+                               placeholder="Note"
+                               @bind="priceCategoryDto.Note" />
+                        <br />
+                        <!-- Button to save the forecast -->
+                        <button class="btn btn-primary"
+                                @onclick="SavePriceCategory">
+                            Save
+                        </button>
+                        <!-- Only show button if not a new record -->
+                        @if (priceCategoryDto.PriceCategoryId != Guid.Empty)
+                        {
+                            <!-- Button to delete the forecast -->
+                            <button class="btn btn-primary"
+                                    @onclick="DeletePriceCategory">
+                                Delete
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+@code {
+
+    PriceCategoryDto[] priceCategories;
+    PriceCategoryDto priceCategoryDto = new PriceCategoryDto();
+    bool ShowPopup = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        priceCategories = await Http.GetFromJsonAsync<PriceCategoryDto[]>("/api/PriceCategory");
+    }
+
+    void ClosePopup()
+    {
+        ShowPopup = false;
+    }
+
+    void AddNewPriceCategory()
+    {
+        priceCategoryDto = new PriceCategoryDto();
+        ShowPopup = true;
+    }
+
+    async Task SavePriceCategory()
+    {
+        ShowPopup = false;
+
+        if (priceCategoryDto.PriceCategoryId == Guid.Empty)
+        {
+            PriceCategoryDto newPriceCategoryDto =
+            new PriceCategoryDto() { PriceCategoryId = Guid.NewGuid(), Name = priceCategoryDto.Name, Note = priceCategoryDto.Note };
+
+            // Save the result
+            await Http.PostAsJsonAsync("/api/PriceCategory", newPriceCategoryDto);
+        }
+        else
+        {
+            // This is an update
+            await Http.PutAsJsonAsync($"/api/PriceCategory/{priceCategoryDto.PriceCategoryId}", priceCategoryDto);
+        }
+        priceCategories = await Http.GetFromJsonAsync<PriceCategoryDto[]>("/api/PriceCategory");
+    }
+    void EditPriceCategory(PriceCategoryDto priceCategory)
+    {
+        priceCategoryDto = priceCategory;
+        // Open the Popup
+        ShowPopup = true;
+    }
+    async Task DeletePriceCategory()
+    {
+        // Close the Popup
+        ShowPopup = false;
+        await Http.DeleteAsync($"/api/PriceCategory/{priceCategoryDto.PriceCategoryId}");
+
+        priceCategories = await Http.GetFromJsonAsync<PriceCategoryDto[]>("/api/PriceCategory");
+    }
+}
