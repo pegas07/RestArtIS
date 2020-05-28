@@ -1,0 +1,133 @@
+﻿@page  "/bussinespartner"
+@inject HttpClient Http
+
+<h3>BussinessPartner</h3>
+@if (businessPartners == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bp in businessPartners)
+            {
+                <tr>
+                    <td>@bp.BusinessPartnerId</td>
+                    <td>@bp.Name</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => EditBusinessPartner(bp))">Edit</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <p>
+        <button class="btn btn-primary"
+                @onclick="AddNewBusinessPartner">
+            Add
+        </button>
+    </p>
+    @if (ShowPopup)
+    {
+        <div class="modal" tabindex="-1" style="display:block"
+             role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Edit Business Partner</h3>
+                        <!-- Button to close the popup -->
+                        <button type="button" class="close"
+                                @onclick="ClosePopup">
+                            <span aria-hidden="true">X</span>
+                        </button>
+                    </div>
+                    <!-- Edit form for the current forecast -->
+                    <div class="modal-body">
+                        <input class="form-control" type="text"
+                               placeholder="Name"
+                               @bind="businessPartnerDto.Name" />
+                        <br />
+                        <!-- Button to save the forecast -->
+                        <button class="btn btn-primary"
+                                @onclick="SaveBusinessPartner">
+                            Save
+                        </button>
+                        <!-- Only show button if not a new record -->
+                        @if (businessPartnerDto.BusinessPartnerId != Guid.Empty)
+                        {
+                            <!-- Button to delete the forecast -->
+                            <button class="btn btn-primary"
+                                    @onclick="DeleteBusinessPartner">
+                                Delete
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    BusinessPartnerDto[] businessPartners;
+    BusinessPartnerDto businessPartnerDto = new BusinessPartnerDto();
+    bool ShowPopup = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        businessPartners = await Http.GetFromJsonAsync<BusinessPartnerDto[]>("/api/BusinessPartners");
+    }
+
+    void ClosePopup()
+    {
+        ShowPopup = false;
+    }
+
+    void AddNewBusinessPartner()
+    {
+        businessPartnerDto = new BusinessPartnerDto();
+        ShowPopup = true;
+    }
+
+    async Task SaveBusinessPartner()
+    {
+        ShowPopup = false;
+
+        if (businessPartnerDto.BusinessPartnerId == Guid.Empty)
+        {
+            BusinessPartnerDto newBusinessPartnerDto =
+        new BusinessPartnerDto() { BusinessPartnerId = Guid.NewGuid(), Name = businessPartnerDto.Name };
+
+            // Save the result
+            await Http.PostAsJsonAsync("/api/BusinessPartners", newBusinessPartnerDto);
+        }
+        else
+        {
+            // This is an update
+            await Http.PutAsJsonAsync($"/api/BusinessPartners/{businessPartnerDto.BusinessPartnerId}", businessPartnerDto);
+        }
+        businessPartners = await Http.GetFromJsonAsync<BusinessPartnerDto[]>("/api/BusinessPartners");
+    }
+    void EditBusinessPartner(BusinessPartnerDto businessPartner)
+    {
+        businessPartnerDto = businessPartner;
+        // Open the Popup
+        ShowPopup = true;
+    }
+    async Task DeleteBusinessPartner()
+    {
+        // Close the Popup
+        ShowPopup = false;
+        await Http.DeleteAsync($"/api/BusinessPartners/{businessPartnerDto.BusinessPartnerId}");
+
+        businessPartners = await Http.GetFromJsonAsync<BusinessPartnerDto[]>("/api/BusinessPartners");
+    }
+}

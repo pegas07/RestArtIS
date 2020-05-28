@@ -25,6 +25,7 @@ namespace RestArtIS.Server.Data
         public virtual DbSet<RestArtItem> RestArtItem { get; set; }
         public virtual DbSet<RestArtItemCategory> RestArtItemCategory { get; set; }
         public virtual DbSet<Vat> Vat { get; set; }
+        public virtual DbSet<BusinessPartner> BusinessPartner { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -129,6 +130,13 @@ namespace RestArtIS.Server.Data
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.ValidTo).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<BusinessPartner>(entity =>
+            {
+                entity.Property(e => e.BusinessPartnerId).ValueGeneratedNever();
+
+                entity.Property(e => e.Name).HasMaxLength(250);
             });
 
             OnModelCreatingPartial(modelBuilder);
